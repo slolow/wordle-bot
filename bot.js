@@ -14,6 +14,9 @@ bot.on('message', (msg) => {
 
     if(chatId === CHAT_ID && messageText.startsWith(WORDLE_MSG_START)) {
         const sender = msg.from
-        console.debug('sender', msg.from)
+        const informationsFromWordleMessage = msg.text.split(" ")
+        
+        // depending on the users phone settings the gameNumber can be for example '1.223' or '1,223'
+        const gameNumber = informationsFromWordleMessage[1].replace(',', '.')
     }
 });
