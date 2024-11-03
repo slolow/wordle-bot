@@ -18,5 +18,6 @@ bot.on('message', (msg) => {
         
         // depending on the users phone settings the gameNumber can be for example '1.223' or '1,223'
         const gameNumber = informationsFromWordleMessage[1].replace(',', '.')
+        const numberOfAttempts = Number(informationsFromWordleMessage[2][0])
     }
 });
