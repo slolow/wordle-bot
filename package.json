@@ -1,0 +1,25 @@
+{
+  "name": "wordle-championship",
+  "version": "1.0.0",
+  "description": "a telegram bot for a wordle championship",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slolow/wordle-bot.git"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "wordle",
+    "championship"
+  ],
+  "author": "slo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/slolow/wordle-bot/issues"
+  },
+  "homepage": "https://github.com/slolow/wordle-bot#readme"
+}
