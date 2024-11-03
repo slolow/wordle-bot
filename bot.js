@@ -13,6 +13,7 @@ bot.on('message', (msg) => {
     const messageText = msg.text;
 
     if(chatId === CHAT_ID && messageText.startsWith(WORDLE_MSG_START)) {
-        console.debug('This is a wordle message');
+        const sender = msg.from
+        console.debug('sender', msg.from)
     }
 });
