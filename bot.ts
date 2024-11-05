@@ -5,6 +5,7 @@ import {
 import "dotenv/config";
 import TelegramBot from "node-telegram-bot-api";
 import { getWinnersStatsOfTheDay } from "./getWinnersStatsOfTheDay";
+import { createWinnersOfTheDayMessage } from "./createWinnersOfTheDayMessage";
 
 const TOKEN = process.env.TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
@@ -49,5 +50,8 @@ bot.on("message", (msg: TelegramBot.Message) => {
     statsOfTheDay.push(playerStatsOfTheDay);
   }
 
-  console.debug("winner of the day", getWinnersStatsOfTheDay(statsOfTheDay));
+  const winnersStatsOfTheDay = getWinnersStatsOfTheDay(statsOfTheDay);
+  bot
+    .sendMessage(chatId, createWinnersOfTheDayMessage(winnersStatsOfTheDay))
+    .catch((error) => console.error("bot message could not be send", error));
 });
