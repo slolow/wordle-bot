@@ -8,10 +8,11 @@ const WORDLE_MSG_START = 'Wordle'
 
 const bot = new TelegramBot(TOKEN, { polling: true });
 
+const statsOfTheDay = []
+
 bot.on('message', (msg) => {
     const chatId = msg.chat.id.toString();
     const messageText = msg.text;
-    const statsOfTheDay = []
 
     if(chatId === CHAT_ID && messageText.startsWith(WORDLE_MSG_START)) {
         const sender = msg.from
@@ -29,5 +30,6 @@ bot.on('message', (msg) => {
         const playerStatsOfTheDay = {}
         playerStatsOfTheDay['player'] = sender.first_name
         playerStatsOfTheDay['attempts'] = numberOfAttempts
+        statsOfTheDay.push(playerStatsOfTheDay)
     }
 });
