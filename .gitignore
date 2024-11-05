@@ -131,3 +131,6 @@ dist
 
 # VS Code
 .DS_Store
+
+# IDEA
+.idea
