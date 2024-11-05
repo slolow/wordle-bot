@@ -2,7 +2,7 @@
   "name": "wordle-championship",
   "version": "1.0.0",
   "description": "a telegram bot for a wordle championship",
-  "main": "bot.js",
+  "main": "bot.ts",
   "scripts": {
     "test": "test"
   },
@@ -25,5 +25,10 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "node-telegram-bot-api": "^0.66.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "@types/node-telegram-bot-api": "^0.64.7",
+    "typescript": "^5.6.3"
   }
 }
