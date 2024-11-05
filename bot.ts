@@ -4,17 +4,27 @@ import {
 } from "./data-structure/playerStatsOfTheDay";
 import "dotenv/config";
 import TelegramBot from "node-telegram-bot-api";
+import cron from "node-cron";
 import { getWinnersStatsOfTheDay } from "./getWinnersStatsOfTheDay";
 import { createWinnersOfTheDayMessage } from "./createWinnersOfTheDayMessage";
 
 const TOKEN = process.env.TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
 
+if (!TOKEN) {
+  throw new Error("you need to provide a TOKEN in an .env file!");
+}
+if (!CHAT_ID) {
+  throw new Error("you need to provide a CHAT_ID in an .env file!");
+}
+
+const CRON_EXPRESSION = "0 0 * * *";
+
 const WORDLE_MSG_START = "Wordle";
 
 const bot = new TelegramBot(TOKEN!, { polling: true });
 
-const statsOfTheDay: StatsOfTheDay = [];
+let statsOfTheDay: StatsOfTheDay = [];
 
 bot.on("message", (msg: TelegramBot.Message) => {
   const chatId = msg.chat.id.toString();
@@ -49,9 +59,12 @@ bot.on("message", (msg: TelegramBot.Message) => {
     };
     statsOfTheDay.push(playerStatsOfTheDay);
   }
+});
 
+cron.schedule(CRON_EXPRESSION, () => {
   const winnersStatsOfTheDay = getWinnersStatsOfTheDay(statsOfTheDay);
   bot
-    .sendMessage(chatId, createWinnersOfTheDayMessage(winnersStatsOfTheDay))
+    .sendMessage(CHAT_ID, createWinnersOfTheDayMessage(winnersStatsOfTheDay))
     .catch((error) => console.error("bot message could not be send", error));
+  statsOfTheDay = [];
 });
