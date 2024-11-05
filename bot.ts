@@ -21,7 +21,8 @@ bot.on('message', (msg: TelegramBot.Message) => {
     }
 
     if (sender.is_bot) {
-        bot.sendMessage(chatId, `${sender.first_name} ist ein Bot! Sein Resultat wird ignoriert`).catch((error) => console.error('bot message could not be send', error))
+        bot.sendMessage(chatId, `${sender.first_name} ist ein Bot! Sein Resultat wird ignoriert`).catch((error) => console.error('bot message could not be send', error));
+        return;
     }
 
     if(messageText.startsWith(WORDLE_MSG_START)) {
