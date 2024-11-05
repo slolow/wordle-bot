@@ -28,6 +28,6 @@ bot.on('message', (msg) => {
 
         const playerStatsOfTheDay = {}
         playerStatsOfTheDay['player'] = sender.first_name
-        playerStatsOfTheDay['attemps'] = numberOfAttempts
+        playerStatsOfTheDay['attempts'] = numberOfAttempts
     }
 });
