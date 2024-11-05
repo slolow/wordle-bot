@@ -24,10 +24,12 @@
   "homepage": "https://github.com/slolow/wordle-bot#readme",
   "dependencies": {
     "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
     "node-telegram-bot-api": "^0.66.0"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
+    "@types/node-cron": "^3.0.11",
     "@types/node-telegram-bot-api": "^0.64.7",
     "prettier": "3.3.3",
     "typescript": "^5.6.3"
