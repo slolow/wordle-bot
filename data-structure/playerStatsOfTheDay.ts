@@ -1,6 +1,6 @@
 export type PlayerStatsOfTheDay = {
-  player: string
-  attempts: number | 'X'
-}
+  player: string;
+  attempts: number | "X";
+};
 
-export type StatsOfTheDay = PlayerStatsOfTheDay[]
+export type StatsOfTheDay = PlayerStatsOfTheDay[];
