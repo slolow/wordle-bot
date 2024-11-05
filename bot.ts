@@ -21,11 +21,11 @@ bot.on('message', (msg) => {
             bot.sendMessage(chatId, `${sender.first_name} ist ein Bot! Sein Resultat wird ignoriert`)
         }
 
-        const informationsFromWordleMessage = msg.text.split(" ")
+        const informationFromWordleMessage = msg.text.split(" ")
         
         // depending on the users phone settings the gameNumber can be for example '1.223' or '1,223'
-        const gameNumber = informationsFromWordleMessage[1].replace(',', '.')
-        const numberOfAttempts = Number(informationsFromWordleMessage[2][0])
+        const gameNumber = informationFromWordleMessage[1].replace(',', '.')
+        const numberOfAttempts = Number(informationFromWordleMessage[2][0])
 
         const playerStatsOfTheDay = {}
         playerStatsOfTheDay['player'] = sender.first_name
