@@ -8,6 +8,7 @@ import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
 import { getWinnersStatsOfTheDay } from "./getWinnersStatsOfTheDay";
 import { createWinnersOfTheDayMessage } from "./createWinnersOfTheDayMessage";
+import { createWinnerTableMessage } from "./createWinnerTableMessage";
 
 const TOKEN = process.env.TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
@@ -78,19 +79,30 @@ cron.schedule(CRON_EXPRESSION, () => {
       .catch((error) => console.error("bot message could not be send", error));
     return;
   }
+
   const winnersStatsOfTheDay: PlayerStatsOfTheDay[] =
     getWinnersStatsOfTheDay(playersStatsOfTheDay);
-  bot
-    .sendMessage(CHAT_ID, createWinnersOfTheDayMessage(winnersStatsOfTheDay))
-    .catch((error) => console.error("bot message could not be send", error));
+
   // TODO: write todaysGame to db
   todaysGame = {
     date: new Date(),
     gameNumber: gameNumber,
     playersStats: playersStatsOfTheDay,
   };
+
   // TODO: write allGames to db
   allGames.push(todaysGame);
+
+  bot
+    .sendMessage(CHAT_ID, createWinnersOfTheDayMessage(winnersStatsOfTheDay))
+    .then(() =>
+      setTimeout(
+        () => bot.sendMessage(CHAT_ID, createWinnerTableMessage(allGames)),
+        1000,
+      ),
+    )
+    .catch((error) => console.error("bot message could not be send", error));
+
   playersStatsOfTheDay = [];
   todaysGame = {
     date: new Date(),
