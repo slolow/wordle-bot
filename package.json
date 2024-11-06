@@ -2,7 +2,7 @@
   "name": "wordle-championship",
   "version": "1.0.0",
   "description": "a telegram bot for a wordle championship",
-  "main": "bot.ts",
+  "main": "src/bot.ts",
   "scripts": {
     "test": "test"
   },
