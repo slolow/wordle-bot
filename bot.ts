@@ -1,7 +1,8 @@
 import {
+  AllGames,
   PlayerStatsOfTheDay,
-  StatsOfTheDay,
-} from "./data-structure/playerStatsOfTheDay";
+  TodaysGame,
+} from "./data-structure/dataTypes";
 import "dotenv/config";
 import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
@@ -24,7 +25,12 @@ const WORDLE_MSG_START = "Wordle";
 
 const bot = new TelegramBot(TOKEN!, { polling: true });
 
-let statsOfTheDay: StatsOfTheDay = [];
+let gameNumber: number;
+let playersStatsOfTheDay: PlayerStatsOfTheDay[] = [];
+let todaysGame: TodaysGame;
+
+// TODO: initialize this with stats coming from the Database
+const allGames: AllGames = [];
 
 bot.on("message", (msg: TelegramBot.Message) => {
   const chatId = msg.chat.id.toString();
@@ -49,7 +55,7 @@ bot.on("message", (msg: TelegramBot.Message) => {
     const informationFromWordleMessage = messageText.split(" ");
 
     // depending on the users phone settings the gameNumber can be for example '1.223' or '1,223'
-    const gameNumber = informationFromWordleMessage[1].replace(",", ".");
+    gameNumber = Number(informationFromWordleMessage[1].replace(",", "."));
     const numberOfAttempts = informationFromWordleMessage[2][0];
 
     const playerStatsOfTheDay: PlayerStatsOfTheDay = {
@@ -57,14 +63,38 @@ bot.on("message", (msg: TelegramBot.Message) => {
       attempts:
         numberOfAttempts !== "X" ? Number(numberOfAttempts) : numberOfAttempts,
     };
-    statsOfTheDay.push(playerStatsOfTheDay);
+    //TODO write playerStatsOfTheDay to DB
+    playersStatsOfTheDay.push(playerStatsOfTheDay);
   }
 });
 
 cron.schedule(CRON_EXPRESSION, () => {
-  const winnersStatsOfTheDay = getWinnersStatsOfTheDay(statsOfTheDay);
+  if (playersStatsOfTheDay.length === 0) {
+    bot
+      .sendMessage(
+        CHAT_ID,
+        "🦦Unfortunately no one played today... shame on you!",
+      )
+      .catch((error) => console.error("bot message could not be send", error));
+    return;
+  }
+  const winnersStatsOfTheDay: PlayerStatsOfTheDay[] =
+    getWinnersStatsOfTheDay(playersStatsOfTheDay);
   bot
     .sendMessage(CHAT_ID, createWinnersOfTheDayMessage(winnersStatsOfTheDay))
     .catch((error) => console.error("bot message could not be send", error));
-  statsOfTheDay = [];
+  // TODO: write todaysGame to db
+  todaysGame = {
+    date: new Date(),
+    gameNumber: gameNumber,
+    playersStats: playersStatsOfTheDay,
+  };
+  // TODO: write allGames to db
+  allGames.push(todaysGame);
+  playersStatsOfTheDay = [];
+  todaysGame = {
+    date: new Date(),
+    gameNumber: 0,
+    playersStats: [],
+  };
 });
