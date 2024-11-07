@@ -10,3 +10,11 @@ export type TodaysGame = {
 };
 
 export type AllGames = TodaysGame[];
+
+export type PlayerStats = {
+  name: string;
+  wins: number;
+  playedGames: number;
+  winsPerGame: number;
+  averageAttempts: number;
+};
