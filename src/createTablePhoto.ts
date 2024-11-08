@@ -6,9 +6,7 @@ const ROW_HEIGHT = 40;
 const HEADER_HEIGHT = 50;
 const PADDING = 10;
 
-export const createTablePhoto = (
-  playersStats: PlayerStats[],
-): Buffer => {
+export const createTablePhoto = (playersStats: PlayerStats[]): Buffer => {
   const canvas = createCanvas(
     WIDTH,
     HEADER_HEIGHT + ROW_HEIGHT * playersStats.length + PADDING,
