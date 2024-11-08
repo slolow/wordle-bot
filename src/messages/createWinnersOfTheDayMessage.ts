@@ -4,7 +4,7 @@ export const createWinnersOfTheDayMessage = (
   winnersStatsOfTheDay: PlayerStatsOfTheDay[],
 ): string => {
   const winners: string[] = winnersStatsOfTheDay.map(
-    (playerStats: PlayerStatsOfTheDay) => playerStats.player,
+    (playerStatsOfTheDay: PlayerStatsOfTheDay) => playerStatsOfTheDay.name,
   );
 
   if (winners.length === 0) {

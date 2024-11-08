@@ -1,5 +1,5 @@
 export type PlayerStatsOfTheDay = {
-  player: string;
+  name: string;
   attempts: number | "X";
 };
 

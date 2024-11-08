@@ -32,17 +32,17 @@ export const updatePlayersStats = (
   playersStatsOfTheDay.forEach((playerStatsOfTheDay: PlayerStatsOfTheDay) => {
     const playerStats: PlayerStats | undefined = playersStats.find(
       (playerStats: PlayerStats) =>
-        playerStats.name === playerStatsOfTheDay.player,
+        playerStats.name === playerStatsOfTheDay.name,
     );
 
     const isWinner: boolean = winnersStatsOfTheDay.some(
       (winnerStatsOfTheDay: PlayerStatsOfTheDay) =>
-        winnerStatsOfTheDay.player === playerStatsOfTheDay.player,
+        winnerStatsOfTheDay.name === playerStatsOfTheDay.name,
     );
 
     if (playerStats === undefined) {
       // add new player to playerStats
-      const name: string = playerStatsOfTheDay.player;
+      const name: string = playerStatsOfTheDay.name;
       const wins: number = isWinner ? 1 : 0;
       const playedGames: number = 1;
       const winsPerGames: number = calcWinsPerGames(wins, playedGames);

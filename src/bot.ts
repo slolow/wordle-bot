@@ -9,7 +9,7 @@ import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
 import { getWinnersStatsOfTheDay } from "./playersStatsOfTheDay/getWinnersStatsOfTheDay.js";
 import { createWinnersOfTheDayMessage } from "./messages/createWinnersOfTheDayMessage.js";
-import { parseCsv } from "./importer/importFromCsv.js";
+import { importFromCsv } from "./importer/importFromCsv.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { updatePlayersStats } from "./playersStats/updatePlayersStats.js";
@@ -64,7 +64,7 @@ bot.on("message", (msg: TelegramBot.Message) => {
     const numberOfAttempts = informationFromWordleMessage[2][0];
 
     const playerStatsOfTheDay: PlayerStatsOfTheDay = {
-      player: sender.first_name,
+      name: sender.first_name,
       attempts:
         numberOfAttempts !== "X" ? Number(numberOfAttempts) : numberOfAttempts,
     };
@@ -83,23 +83,21 @@ cron.schedule(CRON_EXPRESSION, async () => {
     return;
   }
 
-  const playersStats: PlayerStats[] = await parseCsv(pathToPlayersStats).catch(
-    (error) => {
-      bot
-        .sendMessage(
-          CHAT_ID,
-          "🏥I had an accident. I won't be available until some one fixes me. I will come back stronger 🦾! 🏥",
-        )
-        .catch((error) =>
-          console.error("bot message could not be send", error),
-        );
-      console.error(
-        `An error occurred while importing the data from ${pathToPlayersStats}`,
-        error,
-      );
-      process.exit(1);
-    },
-  );
+  const playersStats: PlayerStats[] = await importFromCsv(
+    pathToPlayersStats,
+  ).catch((error) => {
+    bot
+      .sendMessage(
+        CHAT_ID,
+        "🏥I had an accident. I won't be available until some one fixes me. I will come back stronger 🦾! 🏥",
+      )
+      .catch((error) => console.error("bot message could not be send", error));
+    console.error(
+      `An error occurred while importing the data from ${pathToPlayersStats}`,
+      error,
+    );
+    process.exit(1);
+  });
 
   const winnersStatsOfTheDay: PlayerStatsOfTheDay[] =
     getWinnersStatsOfTheDay(playersStatsOfTheDay);
@@ -119,18 +117,21 @@ cron.schedule(CRON_EXPRESSION, async () => {
     );
   });
 
+  const winnersOfTheDayMessage =
+    createWinnersOfTheDayMessage(winnersStatsOfTheDay);
+
   hasExportError
     ? bot
         .sendMessage(
           CHAT_ID,
           "😭 Unfortunately, due to a technical error, I won't be able to include the results in the overall" +
             "statistics today. Scusi my friends! 😭 \n\n Nevertheless here are the results for today: " +
-            `\n\n ${createWinnersOfTheDayMessage(winnersStatsOfTheDay)}`,
+            `\n\n ${winnersOfTheDayMessage}`,
         )
         .catch((error) => console.error("bot message could not be send", error))
     : bot
-        .sendPhoto(CHAT_ID, createTablePhoto(playersStats), {
-          caption: createWinnersOfTheDayMessage(winnersStatsOfTheDay),
+        .sendPhoto(CHAT_ID, createTablePhoto(updatedPlayersStats), {
+          caption: winnersOfTheDayMessage,
         })
         .catch((error) =>
           console.error("bot photo message could not be send", error),

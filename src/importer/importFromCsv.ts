@@ -2,7 +2,7 @@ import { PlayerStats } from "../data-structure/dataTypes.js";
 import { readFile } from "node:fs";
 import Papa, { type ParseResult } from "papaparse";
 
-export const parseCsv = (filePath: string): Promise<PlayerStats[]> => {
+export const importFromCsv = (filePath: string): Promise<PlayerStats[]> => {
   return new Promise((resolve, reject) => {
     readFile(
       filePath,

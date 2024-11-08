@@ -6,10 +6,12 @@ const ROW_HEIGHT = 40;
 const HEADER_HEIGHT = 50;
 const PADDING = 10;
 
-export const createTablePhoto = (playersStats: PlayerStats[]): Buffer => {
+export const createTablePhoto = (
+  updatedPlayersStats: PlayerStats[],
+): Buffer => {
   const canvas = createCanvas(
     WIDTH,
-    HEADER_HEIGHT + ROW_HEIGHT * playersStats.length + PADDING,
+    HEADER_HEIGHT + ROW_HEIGHT * updatedPlayersStats.length + PADDING,
   );
 
   const ctx = canvas.getContext("2d");
@@ -20,7 +22,7 @@ export const createTablePhoto = (playersStats: PlayerStats[]): Buffer => {
   // only show most important stats in photo due to limited space
   const headers: string[] = [
     "place",
-    ...Object.keys(playersStats[0]).slice(0, 3),
+    ...Object.keys(updatedPlayersStats[0]).slice(0, 3),
   ];
 
   const columnWidth: number = WIDTH / headers.length;
@@ -43,9 +45,9 @@ export const createTablePhoto = (playersStats: PlayerStats[]): Buffer => {
   ctx.stroke();
 
   // draw data rows
-  playersStats.forEach((row: PlayerStats, rowIndex: number) => {
+  updatedPlayersStats.forEach((row: PlayerStats, rowIndex: number) => {
     headers.forEach((header: string, colIndex: number) => {
-      // The value for the first column (place) is the rowIndex since the playersStats are sorted
+      // The value for the first column (place) is the rowIndex since the updatedPlayersStats are sorted
       const value: string =
         colIndex === 0
           ? (rowIndex + 1).toString()
