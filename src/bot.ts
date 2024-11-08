@@ -26,6 +26,7 @@ import {
 } from "./messages/sendMessage.js";
 import { createSeeMoreStatsMessage } from "./messages/createSeeMoreStatsMessage.js";
 import { createAllTimeLeaderMessage } from "./messages/createAllTimeLeaderMessage.js";
+import { createStartMessage } from "./messages/createStartMessage.js";
 
 const TOKEN: string | undefined = process.env.TOKEN;
 export const CHAT_ID: string | undefined = process.env.CHAT_ID;
@@ -49,6 +50,8 @@ const WORDLE_MSG_START: string = "Wordle";
 export const bot: TelegramBot = new TelegramBot(TOKEN!, { polling: true });
 
 let playersStatsOfTheDay: PlayerStatsOfTheDay[] = [];
+
+bot.onText(/\/start/, () => sendMessage(createStartMessage(), 0));
 
 bot.on("message", async (msg: TelegramBot.Message) => {
   const chatId: string = msg.chat.id.toString();
