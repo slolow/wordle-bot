@@ -9,7 +9,7 @@ import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
 import { getWinnersStatsOfTheDay } from "./playersStatsOfTheDay/getWinnersStatsOfTheDay.js";
 import { createWinnersOfTheDayMessage } from "./messages/createWinnersOfTheDayMessage.js";
-import { parseCsv } from "./parsers/csvParser.js";
+import { parseCsv } from "./importer/importFromCsv.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { updatePlayersStats } from "./playersStats/updatePlayersStats.js";
