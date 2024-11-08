@@ -140,22 +140,22 @@ cron.schedule(CRON_EXPRESSION, async () => {
   // TODO: write allGames to db
   allGames.push(todaysGame);
 
-  bot
-    .sendMessage(CHAT_ID, createWinnersOfTheDayMessage(winnersStatsOfTheDay))
-    .then(() =>
-      setTimeout(
-        () =>
-          hasExportError
-            ? bot.sendMessage(
-                CHAT_ID,
-                "Unfortunately, due to a technical error, I won't be able to include the results in the overall " +
-                  "statistics today. Scusi my friends!",
-              )
-            : bot.sendPhoto(CHAT_ID, createTablePhoto(playersStats)),
-        1000,
-      ),
-    )
-    .catch((error) => console.error("bot message could not be send", error));
+  hasExportError
+    ? bot
+        .sendMessage(
+          CHAT_ID,
+          "Unfortunately, due to a technical error, I won't be able to include the results in the overall" +
+            "statistics today. Scusi my friends! Nevertheless here are the results for today: " +
+            `\n\n ${createWinnersOfTheDayMessage(winnersStatsOfTheDay)}`,
+        )
+        .catch((error) => console.error("bot message could not be send", error))
+    : bot
+        .sendPhoto(CHAT_ID, createTablePhoto(playersStats), {
+          caption: createWinnersOfTheDayMessage(winnersStatsOfTheDay),
+        })
+        .catch((error) =>
+          console.error("bot message could not be send", error),
+        );
 
   playersStatsOfTheDay = [];
   todaysGame = {
