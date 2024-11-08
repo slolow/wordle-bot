@@ -15,6 +15,10 @@ import { dirname, join } from "path";
 import { updatePlayersStats } from "./playersStats/updatePlayersStats.js";
 import { exportToCsv } from "./exporter/exportToCsv.js";
 import { createTablePhoto } from "./messages/createTablePhoto.js";
+import { createPlayerIsABotMessage } from "./messages/createPlayerIsABotMessage.js";
+import { createNoOnePlayedTodayMessage } from "./messages/createNoOnePlayedTodayMessage.js";
+import { createCrashMessage } from "./messages/createCrashMessage.js";
+import { createNotAbleToUpdatePlayersStats } from "./messages/createNotAbleToUpdatePlayersStats.js";
 
 const TOKEN: string | undefined = process.env.TOKEN;
 const CHAT_ID: string | undefined = process.env.CHAT_ID;
@@ -50,10 +54,7 @@ bot.on("message", (msg: TelegramBot.Message) => {
 
   if (sender.is_bot) {
     bot
-      .sendMessage(
-        chatId,
-        `🔎 ${sender.first_name} is a bot! It's result will be ignored 🔍`,
-      )
+      .sendMessage(chatId, createPlayerIsABotMessage(sender))
       .catch((error) => console.error("bot message could not be send", error));
     return;
   }
@@ -75,10 +76,7 @@ bot.on("message", (msg: TelegramBot.Message) => {
 cron.schedule(CRON_EXPRESSION, async () => {
   if (playersStatsOfTheDay.length === 0) {
     bot
-      .sendMessage(
-        CHAT_ID,
-        "🦦Unfortunately no one played today... shame on you! 🦦",
-      )
+      .sendMessage(CHAT_ID, createNoOnePlayedTodayMessage())
       .catch((error) => console.error("bot message could not be send", error));
     return;
   }
@@ -87,10 +85,7 @@ cron.schedule(CRON_EXPRESSION, async () => {
     pathToPlayersStats,
   ).catch((error) => {
     bot
-      .sendMessage(
-        CHAT_ID,
-        "🏥I had an accident. I won't be available until some one fixes me. I will come back stronger 🦾! 🏥",
-      )
+      .sendMessage(CHAT_ID, createCrashMessage())
       .catch((error) => console.error("bot message could not be send", error));
     console.error(
       `An error occurred while importing the data from ${pathToPlayersStats}`,
@@ -124,9 +119,7 @@ cron.schedule(CRON_EXPRESSION, async () => {
     ? bot
         .sendMessage(
           CHAT_ID,
-          "😭 Unfortunately, due to a technical error, I won't be able to include the results in the overall" +
-            "statistics today. Scusi my friends! 😭 \n\n Nevertheless here are the results for today: " +
-            `\n\n ${winnersOfTheDayMessage}`,
+          createNotAbleToUpdatePlayersStats(winnersOfTheDayMessage),
         )
         .catch((error) => console.error("bot message could not be send", error))
     : bot
