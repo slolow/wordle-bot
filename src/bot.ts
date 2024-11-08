@@ -1,17 +1,14 @@
 // TODO: change tsconfig.json to use .ts extensions instead of .js for import. Even better import without extension
 
 import {
-  AllGames,
   PlayerStats,
   PlayerStatsOfTheDay,
-  TodaysGame,
 } from "./data-structure/dataTypes.js";
 import "dotenv/config";
 import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
 import { getWinnersStatsOfTheDay } from "./getWinnersStatsOfTheDay.js";
 import { createWinnersOfTheDayMessage } from "./createWinnersOfTheDayMessage.js";
-import { createWinnerTableMessage } from "./createWinnerTableMessage.js";
 import { parseCsv } from "./parsers/csvParser.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -40,12 +37,7 @@ const WORDLE_MSG_START = "Wordle";
 
 const bot = new TelegramBot(TOKEN!, { polling: true });
 
-let gameNumber: number;
 let playersStatsOfTheDay: PlayerStatsOfTheDay[] = [];
-let todaysGame: TodaysGame;
-
-// TODO: initialize this with stats coming from the Database
-const allGames: AllGames = [];
 
 bot.on("message", (msg: TelegramBot.Message) => {
   const chatId = msg.chat.id.toString();
@@ -60,7 +52,7 @@ bot.on("message", (msg: TelegramBot.Message) => {
     bot
       .sendMessage(
         chatId,
-        `${sender.first_name} ist ein Bot! Sein Resultat wird ignoriert`,
+        `🔎 ${sender.first_name} is a bot! It's result will be ignored 🔍`,
       )
       .catch((error) => console.error("bot message could not be send", error));
     return;
@@ -69,8 +61,6 @@ bot.on("message", (msg: TelegramBot.Message) => {
   if (messageText.startsWith(WORDLE_MSG_START)) {
     const informationFromWordleMessage = messageText.split(" ");
 
-    // depending on the users phone settings the gameNumber can be for example '1.223' or '1,223'
-    gameNumber = Number(informationFromWordleMessage[1].replace(",", "."));
     const numberOfAttempts = informationFromWordleMessage[2][0];
 
     const playerStatsOfTheDay: PlayerStatsOfTheDay = {
@@ -78,7 +68,6 @@ bot.on("message", (msg: TelegramBot.Message) => {
       attempts:
         numberOfAttempts !== "X" ? Number(numberOfAttempts) : numberOfAttempts,
     };
-    //TODO write playerStatsOfTheDay to DB
     playersStatsOfTheDay.push(playerStatsOfTheDay);
   }
 });
@@ -88,7 +77,7 @@ cron.schedule(CRON_EXPRESSION, async () => {
     bot
       .sendMessage(
         CHAT_ID,
-        "🦦Unfortunately no one played today... shame on you!",
+        "🦦Unfortunately no one played today... shame on you! 🦦",
       )
       .catch((error) => console.error("bot message could not be send", error));
     return;
@@ -99,7 +88,7 @@ cron.schedule(CRON_EXPRESSION, async () => {
       bot
         .sendMessage(
           CHAT_ID,
-          "🏥I had an accident. I won't be available until some one fixes me. I will come back stronger. 🦾",
+          "🏥I had an accident. I won't be available until some one fixes me. I will come back stronger 🦾! 🏥",
         )
         .catch((error) =>
           console.error("bot message could not be send", error),
@@ -130,22 +119,12 @@ cron.schedule(CRON_EXPRESSION, async () => {
     );
   });
 
-  // TODO: write todaysGame to db
-  todaysGame = {
-    date: new Date(),
-    gameNumber: gameNumber,
-    playersStats: playersStatsOfTheDay,
-  };
-
-  // TODO: write allGames to db
-  allGames.push(todaysGame);
-
   hasExportError
     ? bot
         .sendMessage(
           CHAT_ID,
-          "Unfortunately, due to a technical error, I won't be able to include the results in the overall" +
-            "statistics today. Scusi my friends! Nevertheless here are the results for today: " +
+          "😭 Unfortunately, due to a technical error, I won't be able to include the results in the overall" +
+            "statistics today. Scusi my friends! 😭 \n\n Nevertheless here are the results for today: " +
             `\n\n ${createWinnersOfTheDayMessage(winnersStatsOfTheDay)}`,
         )
         .catch((error) => console.error("bot message could not be send", error))
@@ -158,9 +137,4 @@ cron.schedule(CRON_EXPRESSION, async () => {
         );
 
   playersStatsOfTheDay = [];
-  todaysGame = {
-    date: new Date(),
-    gameNumber: 0,
-    playersStats: [],
-  };
 });

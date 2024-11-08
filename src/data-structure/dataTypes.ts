@@ -3,14 +3,6 @@ export type PlayerStatsOfTheDay = {
   attempts: number | "X";
 };
 
-export type TodaysGame = {
-  date: Date;
-  gameNumber: number;
-  playersStats: PlayerStatsOfTheDay[];
-};
-
-export type AllGames = TodaysGame[];
-
 export type PlayerStats = {
   name: string;
   wins: number;
