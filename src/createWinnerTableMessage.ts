@@ -1,6 +1,8 @@
-import { AllGames } from "./data-structure/dataTypes";
+import { PlayerStats } from "./data-structure/dataTypes";
 
-export const createWinnerTableMessage = (allGames: AllGames): string => {
+export const createWinnerTableMessage = (
+  playersStats: PlayerStats[],
+): string => {
   return `
 | place | name | wins | played games | wins/played games | average attempts |
 

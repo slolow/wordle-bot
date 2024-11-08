@@ -1,14 +1,20 @@
 import {
   AllGames,
+  PlayerStats,
   PlayerStatsOfTheDay,
   TodaysGame,
 } from "./data-structure/dataTypes";
 import "dotenv/config";
 import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
-import { getWinnersStatsOfTheDay } from "./getWinnersStatsOfTheDay";
-import { createWinnersOfTheDayMessage } from "./createWinnersOfTheDayMessage";
-import { createWinnerTableMessage } from "./createWinnerTableMessage";
+// TODO: change tsconfig.json to use .ts extensions instead of .js for import. Even better import without extension
+import { getWinnersStatsOfTheDay } from "./getWinnersStatsOfTheDay.js";
+import { createWinnersOfTheDayMessage } from "./createWinnersOfTheDayMessage.js";
+import { createWinnerTableMessage } from "./createWinnerTableMessage.js";
+import { parseCsv } from "./parsers/csvParser.js";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+import { updatePlayerStats } from "./updatePlayerStats.js";
 
 const TOKEN = process.env.TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
@@ -20,7 +26,12 @@ if (!CHAT_ID) {
   throw new Error("you need to provide a CHAT_ID in an .env file!");
 }
 
-const CRON_EXPRESSION = "0 0 * * *";
+// node:fs throws an error when opening file with relative path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const pathToPlayersStats = join(__dirname, "../data/playersStatsTest.csv");
+
+const CRON_EXPRESSION = "* * * * *";
 
 const WORDLE_MSG_START = "Wordle";
 
@@ -32,6 +43,10 @@ let todaysGame: TodaysGame;
 
 // TODO: initialize this with stats coming from the Database
 const allGames: AllGames = [];
+
+const playersStats: PlayerStats[] = await parseCsv(pathToPlayersStats);
+
+console.log("players stats before", playersStats);
 
 bot.on("message", (msg: TelegramBot.Message) => {
   const chatId = msg.chat.id.toString();
@@ -83,6 +98,14 @@ cron.schedule(CRON_EXPRESSION, () => {
   const winnersStatsOfTheDay: PlayerStatsOfTheDay[] =
     getWinnersStatsOfTheDay(playersStatsOfTheDay);
 
+  const updatedPlayersStats: PlayerStats[] = updatePlayerStats(
+    winnersStatsOfTheDay,
+    playersStatsOfTheDay,
+    playersStats,
+  );
+
+  console.log("players stats after", updatedPlayersStats);
+
   // TODO: write todaysGame to db
   todaysGame = {
     date: new Date(),
@@ -97,7 +120,11 @@ cron.schedule(CRON_EXPRESSION, () => {
     .sendMessage(CHAT_ID, createWinnersOfTheDayMessage(winnersStatsOfTheDay))
     .then(() =>
       setTimeout(
-        () => bot.sendMessage(CHAT_ID, createWinnerTableMessage(allGames)),
+        () =>
+          bot.sendMessage(
+            CHAT_ID,
+            createWinnerTableMessage(updatedPlayersStats),
+          ),
         1000,
       ),
     )

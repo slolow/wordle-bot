@@ -15,6 +15,7 @@ export type PlayerStats = {
   name: string;
   wins: number;
   playedGames: number;
-  winsPerGame: number;
+  winsPerGames: number;
+  totalOfAttempts: number;
   averageAttempts: number;
 };
