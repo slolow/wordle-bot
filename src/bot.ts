@@ -78,6 +78,15 @@ bot.on("message", async (msg: TelegramBot.Message) => {
         numberOfAttempts !== "X" ? Number(numberOfAttempts) : numberOfAttempts,
     };
     playersStatsOfTheDay.push(playerStatsOfTheDay);
+  } else {
+    bot
+      .deleteMessage(chatId, msg.message_id)
+      .catch((error) =>
+        console.error(
+          `message with id ${msg.message_id} could not be deleted`,
+          error,
+        ),
+      );
   }
 });
 
