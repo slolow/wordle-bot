@@ -25,6 +25,7 @@ import {
   sendPhoto,
 } from "./messages/sendMessage.js";
 import { createSeeMoreStatsMessage } from "./messages/createSeeMoreStatsMessage.js";
+import { createAllTimeLeaderMessage } from "./messages/createAllTimeLeaderMessage.js";
 
 const TOKEN: string | undefined = process.env.TOKEN;
 export const CHAT_ID: string | undefined = process.env.CHAT_ID;
@@ -112,19 +113,19 @@ cron.schedule(CRON_EXPRESSION, async () => {
     );
   });
 
-  const winnersOfTheDayMessage =
+  const winnersOfTheDayMessage: string =
     createWinnersOfTheDayMessage(winnersStatsOfTheDay);
+  const allTimeLeaderMessage: string =
+    createAllTimeLeaderMessage(updatedPlayersStats);
+  const messageOfTheDay: string = `${winnersOfTheDayMessage}\n\n${allTimeLeaderMessage}`;
 
   if (hasExportError) {
     await sendMessage(
-      createNotAbleToUpdatePlayersStatsMessage(winnersOfTheDayMessage),
+      createNotAbleToUpdatePlayersStatsMessage(messageOfTheDay),
     );
     return;
   }
-  await sendPhoto(
-    createTablePhoto(updatedPlayersStats),
-    winnersOfTheDayMessage,
-  );
+  await sendPhoto(createTablePhoto(updatedPlayersStats), messageOfTheDay);
   await sendDocument(pathToPlayersStats, createSeeMoreStatsMessage());
 
   playersStatsOfTheDay = [];
