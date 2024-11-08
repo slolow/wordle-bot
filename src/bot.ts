@@ -19,7 +19,12 @@ import { createPlayerIsABotMessage } from "./messages/createPlayerIsABotMessage.
 import { createNoOnePlayedTodayMessage } from "./messages/createNoOnePlayedTodayMessage.js";
 import { createCrashMessage } from "./messages/createCrashMessage.js";
 import { createNotAbleToUpdatePlayersStatsMessage } from "./messages/createNotAbleToUpdatePlayersStatsMessage.js";
-import { sendMessage, sendPhoto } from "./messages/sendMessage.js";
+import {
+  sendDocument,
+  sendMessage,
+  sendPhoto,
+} from "./messages/sendMessage.js";
+import { createSeeMoreStatsMessage } from "./messages/createSeeMoreStatsMessage.js";
 
 const TOKEN: string | undefined = process.env.TOKEN;
 export const CHAT_ID: string | undefined = process.env.CHAT_ID;
@@ -110,14 +115,17 @@ cron.schedule(CRON_EXPRESSION, async () => {
   const winnersOfTheDayMessage =
     createWinnersOfTheDayMessage(winnersStatsOfTheDay);
 
-  hasExportError
-    ? await sendMessage(
-        createNotAbleToUpdatePlayersStatsMessage(winnersOfTheDayMessage),
-      )
-    : await sendPhoto(
-        createTablePhoto(updatedPlayersStats),
-        winnersOfTheDayMessage,
-      );
+  if (hasExportError) {
+    await sendMessage(
+      createNotAbleToUpdatePlayersStatsMessage(winnersOfTheDayMessage),
+    );
+    return;
+  }
+  await sendPhoto(
+    createTablePhoto(updatedPlayersStats),
+    winnersOfTheDayMessage,
+  );
+  await sendDocument(pathToPlayersStats, createSeeMoreStatsMessage());
 
   playersStatsOfTheDay = [];
 });

@@ -11,7 +11,8 @@ const calcWins = (wins: number, isWinner: boolean): number =>
 
 const calcPlayedGames = (playedGames: number): number => playedGames + 1;
 
-const calcWinsPerGames = (wins: number, games: number): number => wins / games;
+const calcWinsPerGames = (wins: number, games: number): number =>
+  Number((wins / games).toFixed(3));
 
 const calcAttemptsOfTheDay = (attempts: number | "X"): number =>
   typeof attempts === "number" ? attempts : VALUE_X_ATTEMPTS_AS;
@@ -22,7 +23,7 @@ const calcTotalOfAttempts = (
 ): number => totalOfAttempts + calcAttemptsOfTheDay(attempts);
 
 const calcAverageAttempts = (totalOfAttempts: number, games: number): number =>
-  totalOfAttempts / games;
+  Number((totalOfAttempts / games).toFixed(3));
 
 export const updatePlayersStats = (
   winnersStatsOfTheDay: PlayerStatsOfTheDay[],
