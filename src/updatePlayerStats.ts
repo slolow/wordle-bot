@@ -1,4 +1,7 @@
-import { PlayerStats, PlayerStatsOfTheDay } from "./data-structure/dataTypes";
+import {
+  PlayerStats,
+  PlayerStatsOfTheDay,
+} from "./data-structure/dataTypes.js";
 import { sortPlayerStatsFromWinnerToLoser } from "./sortPlayerStats.js";
 
 const VALUE_X_ATTEMPTS_AS = 9;

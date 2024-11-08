@@ -1,4 +1,4 @@
-import { PlayerStats } from "../data-structure/dataTypes";
+import { PlayerStats } from "../data-structure/dataTypes.js";
 import Papa from "papaparse";
 import { writeFile } from "node:fs";
 

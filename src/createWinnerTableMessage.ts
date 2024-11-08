@@ -1,4 +1,4 @@
-import { PlayerStats } from "./data-structure/dataTypes";
+import { PlayerStats } from "./data-structure/dataTypes.js";
 
 export const createWinnerTableMessage = (
   playersStats: PlayerStats[],
