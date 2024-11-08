@@ -1,4 +1,4 @@
-import { PlayerStatsOfTheDay } from "./data-structure/dataTypes.js";
+import { PlayerStatsOfTheDay } from "../data-structure/dataTypes.js";
 
 export const createWinnersOfTheDayMessage = (
   winnersStatsOfTheDay: PlayerStatsOfTheDay[],

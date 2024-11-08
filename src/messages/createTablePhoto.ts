@@ -1,4 +1,4 @@
-import { PlayerStats } from "./data-structure/dataTypes.js";
+import { PlayerStats } from "../data-structure/dataTypes.js";
 import { createCanvas } from "@napi-rs/canvas";
 
 const WIDTH = 600;

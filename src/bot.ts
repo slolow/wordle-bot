@@ -8,13 +8,13 @@ import "dotenv/config";
 import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
 import { getWinnersStatsOfTheDay } from "./getWinnersStatsOfTheDay.js";
-import { createWinnersOfTheDayMessage } from "./createWinnersOfTheDayMessage.js";
+import { createWinnersOfTheDayMessage } from "./messages/createWinnersOfTheDayMessage.js";
 import { parseCsv } from "./parsers/csvParser.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { updatePlayerStats } from "./updatePlayerStats.js";
 import { exportToCsv } from "./exporter/exportToCsv.js";
-import { createTablePhoto } from "./createTablePhoto.js";
+import { createTablePhoto } from "./messages/createTablePhoto.js";
 
 const TOKEN: string | undefined = process.env.TOKEN;
 const CHAT_ID: string | undefined = process.env.CHAT_ID;
