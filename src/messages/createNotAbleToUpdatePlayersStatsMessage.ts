@@ -1,4 +1,4 @@
-export const createNotAbleToUpdatePlayersStats = (
+export const createNotAbleToUpdatePlayersStatsMessage = (
   winnersOfTheDayMessage: string,
 ): string =>
   "😭 Unfortunately, due to a technical error, I won't be able to include the results in the overall" +

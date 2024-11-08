@@ -18,10 +18,10 @@ import { createTablePhoto } from "./messages/createTablePhoto.js";
 import { createPlayerIsABotMessage } from "./messages/createPlayerIsABotMessage.js";
 import { createNoOnePlayedTodayMessage } from "./messages/createNoOnePlayedTodayMessage.js";
 import { createCrashMessage } from "./messages/createCrashMessage.js";
-import { createNotAbleToUpdatePlayersStats } from "./messages/createNotAbleToUpdatePlayersStats.js";
+import { createNotAbleToUpdatePlayersStatsMessage } from "./messages/createNotAbleToUpdatePlayersStatsMessage.js";
 
 const TOKEN: string | undefined = process.env.TOKEN;
-const CHAT_ID: string | undefined = process.env.CHAT_ID;
+export const CHAT_ID: string | undefined = process.env.CHAT_ID;
 
 if (!TOKEN) {
   throw new Error("you need to provide a TOKEN in an .env file!");
@@ -119,7 +119,7 @@ cron.schedule(CRON_EXPRESSION, async () => {
     ? bot
         .sendMessage(
           CHAT_ID,
-          createNotAbleToUpdatePlayersStats(winnersOfTheDayMessage),
+          createNotAbleToUpdatePlayersStatsMessage(winnersOfTheDayMessage),
         )
         .catch((error) => console.error("bot message could not be send", error))
     : bot
