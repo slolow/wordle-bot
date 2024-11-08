@@ -45,7 +45,7 @@ const pathToPlayersStats = join(__dirname, "../data/playersStatsTest.csv");
 
 const CRON_EXPRESSION: string = "* * * * *";
 
-const WORDLE_MSG_START: string = "Wordle";
+const WORDLE_REGEX = /^Wordle \d+[.,]\d+ [1-6X]\/6/;
 
 export const bot: TelegramBot = new TelegramBot(TOKEN!, { polling: true });
 
@@ -67,7 +67,7 @@ bot.on("message", async (msg: TelegramBot.Message) => {
     return;
   }
 
-  if (messageText.startsWith(WORDLE_MSG_START)) {
+  if (WORDLE_REGEX.test(messageText)) {
     const informationFromWordleMessage = messageText.split(" ");
 
     const numberOfAttempts = informationFromWordleMessage[2][0];
