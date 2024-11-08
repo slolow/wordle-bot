@@ -1,13 +1,14 @@
+// TODO: change tsconfig.json to use .ts extensions instead of .js for import. Even better import without extension
+
 import {
   AllGames,
   PlayerStats,
   PlayerStatsOfTheDay,
   TodaysGame,
-} from "./data-structure/dataTypes";
+} from "./data-structure/dataTypes.js";
 import "dotenv/config";
 import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
-// TODO: change tsconfig.json to use .ts extensions instead of .js for import. Even better import without extension
 import { getWinnersStatsOfTheDay } from "./getWinnersStatsOfTheDay.js";
 import { createWinnersOfTheDayMessage } from "./createWinnersOfTheDayMessage.js";
 import { createWinnerTableMessage } from "./createWinnerTableMessage.js";
@@ -16,6 +17,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { updatePlayerStats } from "./updatePlayerStats.js";
 import { exportToCsv } from "./exporter/exportToCsv.js";
+import { createTablePhoto } from "./createTablePhoto.js";
 
 const TOKEN = process.env.TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
@@ -149,10 +151,7 @@ cron.schedule(CRON_EXPRESSION, async () => {
                 "Unfortunately, due to a technical error, I won't be able to include the results in the overall " +
                   "statistics today. Scusi my friends!",
               )
-            : bot.sendMessage(
-                CHAT_ID,
-                createWinnerTableMessage(updatedPlayersStats),
-              ),
+            : bot.sendPhoto(CHAT_ID, createTablePhoto(playersStats)),
         1000,
       ),
     )

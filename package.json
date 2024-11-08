@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/slolow/wordle-bot#readme",
   "dependencies": {
+    "@napi-rs/canvas": "^0.1.60",
     "dotenv": "^16.4.5",
     "node-cron": "^3.0.3",
     "node-telegram-bot-api": "^0.66.0",
