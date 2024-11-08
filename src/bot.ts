@@ -15,6 +15,7 @@ import { parseCsv } from "./parsers/csvParser.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { updatePlayerStats } from "./updatePlayerStats.js";
+import { exportToCsv } from "./exporter/exportToCsv.js";
 
 const TOKEN = process.env.TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
@@ -43,10 +44,6 @@ let todaysGame: TodaysGame;
 
 // TODO: initialize this with stats coming from the Database
 const allGames: AllGames = [];
-
-const playersStats: PlayerStats[] = await parseCsv(pathToPlayersStats);
-
-console.log("players stats before", playersStats);
 
 bot.on("message", (msg: TelegramBot.Message) => {
   const chatId = msg.chat.id.toString();
@@ -84,7 +81,7 @@ bot.on("message", (msg: TelegramBot.Message) => {
   }
 });
 
-cron.schedule(CRON_EXPRESSION, () => {
+cron.schedule(CRON_EXPRESSION, async () => {
   if (playersStatsOfTheDay.length === 0) {
     bot
       .sendMessage(
@@ -95,6 +92,24 @@ cron.schedule(CRON_EXPRESSION, () => {
     return;
   }
 
+  const playersStats: PlayerStats[] = await parseCsv(pathToPlayersStats).catch(
+    (error) => {
+      bot
+        .sendMessage(
+          CHAT_ID,
+          "🏥I had an accident. I won't be available until some one fixes me. I will come back stronger. 🦾",
+        )
+        .catch((error) =>
+          console.error("bot message could not be send", error),
+        );
+      console.error(
+        `An error occurred while importing the data from ${pathToPlayersStats}`,
+        error,
+      );
+      process.exit(1);
+    },
+  );
+
   const winnersStatsOfTheDay: PlayerStatsOfTheDay[] =
     getWinnersStatsOfTheDay(playersStatsOfTheDay);
 
@@ -104,7 +119,14 @@ cron.schedule(CRON_EXPRESSION, () => {
     playersStats,
   );
 
-  console.log("players stats after", updatedPlayersStats);
+  let hasExportError: boolean = false;
+  exportToCsv(pathToPlayersStats, updatedPlayersStats).catch((error) => {
+    hasExportError = true;
+    console.error(
+      `The updated player stats could not be exported to ${pathToPlayersStats}`,
+      error,
+    );
+  });
 
   // TODO: write todaysGame to db
   todaysGame = {
@@ -121,10 +143,16 @@ cron.schedule(CRON_EXPRESSION, () => {
     .then(() =>
       setTimeout(
         () =>
-          bot.sendMessage(
-            CHAT_ID,
-            createWinnerTableMessage(updatedPlayersStats),
-          ),
+          hasExportError
+            ? bot.sendMessage(
+                CHAT_ID,
+                "Unfortunately, due to a technical error, I won't be able to include the results in the overall " +
+                  "statistics today. Scusi my friends!",
+              )
+            : bot.sendMessage(
+                CHAT_ID,
+                createWinnerTableMessage(updatedPlayersStats),
+              ),
         1000,
       ),
     )
