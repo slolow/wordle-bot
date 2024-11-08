@@ -7,12 +7,12 @@ import {
 import "dotenv/config";
 import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
-import { getWinnersStatsOfTheDay } from "./getWinnersStatsOfTheDay.js";
+import { getWinnersStatsOfTheDay } from "./playersStatsOfTheDay/getWinnersStatsOfTheDay.js";
 import { createWinnersOfTheDayMessage } from "./messages/createWinnersOfTheDayMessage.js";
 import { parseCsv } from "./parsers/csvParser.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { updatePlayerStats } from "./updatePlayerStats.js";
+import { updatePlayersStats } from "./playersStats/updatePlayersStats.js";
 import { exportToCsv } from "./exporter/exportToCsv.js";
 import { createTablePhoto } from "./messages/createTablePhoto.js";
 
@@ -104,7 +104,7 @@ cron.schedule(CRON_EXPRESSION, async () => {
   const winnersStatsOfTheDay: PlayerStatsOfTheDay[] =
     getWinnersStatsOfTheDay(playersStatsOfTheDay);
 
-  const updatedPlayersStats: PlayerStats[] = updatePlayerStats(
+  const updatedPlayersStats: PlayerStats[] = updatePlayersStats(
     winnersStatsOfTheDay,
     playersStatsOfTheDay,
     playersStats,

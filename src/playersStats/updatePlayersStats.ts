@@ -1,7 +1,7 @@
 import {
   PlayerStats,
   PlayerStatsOfTheDay,
-} from "./data-structure/dataTypes.js";
+} from "../data-structure/dataTypes.js";
 import { sortPlayerStatsFromWinnerToLoser } from "./sortPlayerStats.js";
 
 const VALUE_X_ATTEMPTS_AS = 9;
@@ -24,7 +24,7 @@ const calcTotalOfAttempts = (
 const calcAverageAttempts = (totalOfAttempts: number, games: number): number =>
   totalOfAttempts / games;
 
-export const updatePlayerStats = (
+export const updatePlayersStats = (
   winnersStatsOfTheDay: PlayerStatsOfTheDay[],
   playersStatsOfTheDay: PlayerStatsOfTheDay[],
   playersStats: PlayerStats[],
