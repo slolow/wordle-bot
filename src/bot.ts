@@ -19,6 +19,7 @@ import { createPlayerIsABotMessage } from "./messages/createPlayerIsABotMessage.
 import { createNoOnePlayedTodayMessage } from "./messages/createNoOnePlayedTodayMessage.js";
 import { createCrashMessage } from "./messages/createCrashMessage.js";
 import { createNotAbleToUpdatePlayersStatsMessage } from "./messages/createNotAbleToUpdatePlayersStatsMessage.js";
+import { sendMessage, sendPhoto } from "./messages/sendMessage.js";
 
 const TOKEN: string | undefined = process.env.TOKEN;
 export const CHAT_ID: string | undefined = process.env.CHAT_ID;
@@ -39,11 +40,11 @@ const CRON_EXPRESSION: string = "* * * * *";
 
 const WORDLE_MSG_START: string = "Wordle";
 
-const bot: TelegramBot = new TelegramBot(TOKEN!, { polling: true });
+export const bot: TelegramBot = new TelegramBot(TOKEN!, { polling: true });
 
 let playersStatsOfTheDay: PlayerStatsOfTheDay[] = [];
 
-bot.on("message", (msg: TelegramBot.Message) => {
+bot.on("message", async (msg: TelegramBot.Message) => {
   const chatId: string = msg.chat.id.toString();
   const sender: TelegramBot.User | undefined = msg.from;
   const messageText: string | undefined = msg.text;
@@ -53,9 +54,7 @@ bot.on("message", (msg: TelegramBot.Message) => {
   }
 
   if (sender.is_bot) {
-    bot
-      .sendMessage(chatId, createPlayerIsABotMessage(sender))
-      .catch((error) => console.error("bot message could not be send", error));
+    await sendMessage(createPlayerIsABotMessage(sender));
     return;
   }
 
@@ -75,18 +74,14 @@ bot.on("message", (msg: TelegramBot.Message) => {
 
 cron.schedule(CRON_EXPRESSION, async () => {
   if (playersStatsOfTheDay.length === 0) {
-    bot
-      .sendMessage(CHAT_ID, createNoOnePlayedTodayMessage())
-      .catch((error) => console.error("bot message could not be send", error));
+    await sendMessage(createNoOnePlayedTodayMessage());
     return;
   }
 
   const playersStats: PlayerStats[] = await importFromCsv(
     pathToPlayersStats,
   ).catch((error) => {
-    bot
-      .sendMessage(CHAT_ID, createCrashMessage())
-      .catch((error) => console.error("bot message could not be send", error));
+    sendMessage(createCrashMessage());
     console.error(
       `An error occurred while importing the data from ${pathToPlayersStats}`,
       error,
@@ -116,19 +111,13 @@ cron.schedule(CRON_EXPRESSION, async () => {
     createWinnersOfTheDayMessage(winnersStatsOfTheDay);
 
   hasExportError
-    ? bot
-        .sendMessage(
-          CHAT_ID,
-          createNotAbleToUpdatePlayersStatsMessage(winnersOfTheDayMessage),
-        )
-        .catch((error) => console.error("bot message could not be send", error))
-    : bot
-        .sendPhoto(CHAT_ID, createTablePhoto(updatedPlayersStats), {
-          caption: winnersOfTheDayMessage,
-        })
-        .catch((error) =>
-          console.error("bot photo message could not be send", error),
-        );
+    ? await sendMessage(
+        createNotAbleToUpdatePlayersStatsMessage(winnersOfTheDayMessage),
+      )
+    : await sendPhoto(
+        createTablePhoto(updatedPlayersStats),
+        winnersOfTheDayMessage,
+      );
 
   playersStatsOfTheDay = [];
 });
