@@ -16,8 +16,8 @@ import { updatePlayerStats } from "./updatePlayerStats.js";
 import { exportToCsv } from "./exporter/exportToCsv.js";
 import { createTablePhoto } from "./createTablePhoto.js";
 
-const TOKEN = process.env.TOKEN;
-const CHAT_ID = process.env.CHAT_ID;
+const TOKEN: string | undefined = process.env.TOKEN;
+const CHAT_ID: string | undefined = process.env.CHAT_ID;
 
 if (!TOKEN) {
   throw new Error("you need to provide a TOKEN in an .env file!");
@@ -26,23 +26,23 @@ if (!CHAT_ID) {
   throw new Error("you need to provide a CHAT_ID in an .env file!");
 }
 
-// node:fs throws an error when opening file with relative path
+// We need absolute path because node:fs throws an error when opening file with relative path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const pathToPlayersStats = join(__dirname, "../data/playersStatsTest.csv");
 
-const CRON_EXPRESSION = "* * * * *";
+const CRON_EXPRESSION: string = "* * * * *";
 
-const WORDLE_MSG_START = "Wordle";
+const WORDLE_MSG_START: string = "Wordle";
 
-const bot = new TelegramBot(TOKEN!, { polling: true });
+const bot: TelegramBot = new TelegramBot(TOKEN!, { polling: true });
 
 let playersStatsOfTheDay: PlayerStatsOfTheDay[] = [];
 
 bot.on("message", (msg: TelegramBot.Message) => {
-  const chatId = msg.chat.id.toString();
-  const sender = msg.from;
-  const messageText = msg.text;
+  const chatId: string = msg.chat.id.toString();
+  const sender: TelegramBot.User | undefined = msg.from;
+  const messageText: string | undefined = msg.text;
 
   if (!sender || !messageText || chatId !== CHAT_ID) {
     return;
@@ -133,7 +133,7 @@ cron.schedule(CRON_EXPRESSION, async () => {
           caption: createWinnersOfTheDayMessage(winnersStatsOfTheDay),
         })
         .catch((error) =>
-          console.error("bot message could not be send", error),
+          console.error("bot photo message could not be send", error),
         );
 
   playersStatsOfTheDay = [];
