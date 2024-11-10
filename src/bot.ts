@@ -30,6 +30,8 @@ import { createStartMessage } from "./messages/createStartMessage.js";
 import { createWelcomeNewChatMembersMessage } from "./messages/createWelcomeNewChatMembersMessage.js";
 import { exportToTxt } from "./exporter/exportToTxt.js";
 import { importFromTxt } from "./importer/importFromTxt.js";
+import { createBotWillBeDownMessage } from "./messages/createBotWillBeDownMessage.js";
+import { createBotIsBackMessage } from "./messages/createBotIsBackMessage.js";
 
 const TOKEN: string | undefined = process.env.TOKEN;
 export const CHAT_ID: string | undefined = process.env.CHAT_ID;
@@ -64,6 +66,10 @@ bot.onText(/\/start/, async () => {
 
   await exportToTxt(pathToStartMessageId, startMessageId.toString());
 });
+
+bot.onText(/\/down/, () => sendMessage(createBotWillBeDownMessage(), 0));
+
+bot.onText(/\/back/, () => sendMessage(createBotIsBackMessage()));
 
 bot.on("message", async (msg: TelegramBot.Message) => {
   const chatId: string = msg.chat.id.toString();
