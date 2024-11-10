@@ -136,3 +136,6 @@ dist
 
 # IDEA
 .idea
+
+# data
+data/startMessageId.txt

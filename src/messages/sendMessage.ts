@@ -5,11 +5,12 @@ import type internal from "node:stream";
 export const sendMessage = async (
   message: string,
   typingTime: number = 10000,
-): Promise<void> => {
+  options?: TelegramBot.SendMessageOptions,
+): Promise<void | TelegramBot.Message> => {
   await typeMessage(typingTime);
 
-  bot
-    .sendMessage(CHAT_ID!, message)
+  return bot
+    .sendMessage(CHAT_ID!, message, options)
     .catch((error) => console.error("bot message could not be send", error));
 };
 

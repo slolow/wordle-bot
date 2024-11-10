@@ -27,6 +27,9 @@ import {
 import { createSeeMoreStatsMessage } from "./messages/createSeeMoreStatsMessage.js";
 import { createAllTimeLeaderMessage } from "./messages/createAllTimeLeaderMessage.js";
 import { createStartMessage } from "./messages/createStartMessage.js";
+import { createWelcomeNewChatMembersMessage } from "./messages/createWelcomeNewChatMembersMessage.js";
+import { exportToTxt } from "./exporter/exportToTxt.js";
+import { importFromTxt } from "./importer/importFromTxt.js";
 
 const TOKEN: string | undefined = process.env.TOKEN;
 export const CHAT_ID: string | undefined = process.env.CHAT_ID;
@@ -42,6 +45,7 @@ if (!CHAT_ID) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const pathToPlayersStats = join(__dirname, "../data/playersStatsTest.csv");
+const pathToStartMessageId = join(__dirname, "../data/startMessageId.txt");
 
 const CRON_EXPRESSION: string = "* * * * *";
 
@@ -51,12 +55,32 @@ export const bot: TelegramBot = new TelegramBot(TOKEN!, { polling: true });
 
 let playersStatsOfTheDay: PlayerStatsOfTheDay[] = [];
 
-bot.onText(/\/start/, () => sendMessage(createStartMessage(), 0));
+bot.onText(/\/start/, async () => {
+  const startMessage: TelegramBot.Message | void = await sendMessage(
+    createStartMessage(),
+    0,
+  );
+  const startMessageId: number = startMessage!.message_id;
+
+  await exportToTxt(pathToStartMessageId, startMessageId.toString());
+});
 
 bot.on("message", async (msg: TelegramBot.Message) => {
   const chatId: string = msg.chat.id.toString();
   const sender: TelegramBot.User | undefined = msg.from;
   const messageText: string | undefined = msg.text;
+
+  if (msg.new_chat_members) {
+    const startMessageId = Number(await importFromTxt(pathToStartMessageId));
+    await sendMessage(
+      createWelcomeNewChatMembersMessage(msg.new_chat_members),
+      2000,
+      {
+        reply_to_message_id: startMessageId,
+      },
+    );
+    return;
+  }
 
   if (!sender || !messageText || chatId !== CHAT_ID) {
     return;
@@ -69,7 +93,6 @@ bot.on("message", async (msg: TelegramBot.Message) => {
 
   if (WORDLE_REGEX.test(messageText)) {
     const informationFromWordleMessage = messageText.split(" ");
-
     const numberOfAttempts = informationFromWordleMessage[2][0];
 
     const playerStatsOfTheDay: PlayerStatsOfTheDay = {
