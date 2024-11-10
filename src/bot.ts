@@ -69,7 +69,7 @@ bot.onText(/\/start/, async () => {
 
 bot.onText(/\/down/, () => sendMessage(createBotWillBeDownMessage(), 0));
 
-bot.onText(/\/back/, () => sendMessage(createBotIsBackMessage()));
+bot.onText(/\/back/, () => sendMessage(createBotIsBackMessage(), 0));
 
 bot.on("message", async (msg: TelegramBot.Message) => {
   const chatId: string = msg.chat.id.toString();
