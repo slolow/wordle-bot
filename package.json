@@ -5,7 +5,7 @@
   "main": "src/bot.ts",
   "type": "module",
   "scripts": {
-    "test": "test"
+    "bot": "npx tsc && node src/bot.js"
   },
   "repository": {
     "type": "git",
