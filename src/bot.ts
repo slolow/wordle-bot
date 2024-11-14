@@ -46,7 +46,7 @@ if (!CHAT_ID) {
 // We need absolute path because node:fs throws an error when opening file with relative path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const pathToPlayersStats = join(__dirname, "../data/playersStatsTest.csv");
+const pathToPlayersStats = join(__dirname, "../data/playersStats.csv");
 const pathToStartMessageId = join(__dirname, "../data/startMessageId.txt");
 
 const CRON_EXPRESSION: string = "* * * * *";
