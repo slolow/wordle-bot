@@ -16,7 +16,7 @@ import { updatePlayersStats } from "./playersStats/updatePlayersStats.js";
 import { exportToCsv } from "./exporter/exportToCsv.js";
 import { createTablePhoto } from "./messages/createTablePhoto.js";
 import { createPlayerIsABotMessage } from "./messages/createPlayerIsABotMessage.js";
-import { createNoOnePlayedTodayMessage } from "./messages/createNoOnePlayedTodayMessage.js";
+import { createNoOnePlayedYesterdayMessage } from "./messages/createNoOnePlayedYesterdayMessage.js";
 import { createCrashMessage } from "./messages/createCrashMessage.js";
 import { createNotAbleToUpdatePlayersStatsMessage } from "./messages/createNotAbleToUpdatePlayersStatsMessage.js";
 import {
@@ -121,7 +121,7 @@ bot.on("message", async (msg: TelegramBot.Message) => {
 
 cron.schedule(CRON_EXPRESSION, async () => {
   if (playersStatsOfTheDay.length === 0) {
-    await sendMessage(createNoOnePlayedTodayMessage());
+    await sendMessage(createNoOnePlayedYesterdayMessage());
     return;
   }
 
