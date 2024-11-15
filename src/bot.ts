@@ -49,7 +49,7 @@ const __dirname = dirname(__filename);
 const pathToPlayersStats = join(__dirname, "../data/playersStats.csv");
 const pathToStartMessageId = join(__dirname, "../data/startMessageId.txt");
 
-const CRON_EXPRESSION: string = "* * * * *";
+const CRON_EXPRESSION: string = "0 0 * * *";
 
 const WORDLE_REGEX = /^Wordle \d+[.,]\d+ [1-6X]\/6/;
 
