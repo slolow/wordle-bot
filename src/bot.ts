@@ -7,6 +7,8 @@ import {
 import "dotenv/config";
 import TelegramBot from "node-telegram-bot-api";
 import cron from "node-cron";
+import dotenv from "dotenv";
+import path from "node:path";
 import { getWinnersStatsOfTheDay } from "./playersStatsOfTheDay/getWinnersStatsOfTheDay.js";
 import { createWinnersOfTheDayMessage } from "./messages/createWinnersOfTheDayMessage.js";
 import { importFromCsv } from "./importer/importFromCsv.js";
@@ -32,9 +34,21 @@ import { exportToTxt } from "./exporter/exportToTxt.js";
 import { importFromTxt } from "./importer/importFromTxt.js";
 import { createBotWillBeDownMessage } from "./messages/createBotWillBeDownMessage.js";
 import { createBotIsBackMessage } from "./messages/createBotIsBackMessage.js";
+import { Environment } from "./Environment.js";
+
+// config dotenv to read the right .env file. By default, read from .env.development.local.
+const environment: Environment =
+  (process.env.ENVIRONMENT as Environment) || "dev";
+const envFile = environment === "dev" ? ".env.development.local" : ".env";
+dotenv.config({ path: path.resolve(process.cwd(), envFile), override: true });
 
 const TOKEN: string | undefined = process.env.TOKEN;
 export const CHAT_ID: string | undefined = process.env.CHAT_ID;
+const RELATIVE_PATH_TO_PLAYERS_STATS: string | undefined =
+  process.env.RELATIVE_PATH_TO_PLAYERS_STATS;
+const RELATIVE_PATH_TO_START_MESSAGE_ID: string | undefined =
+  process.env.RELATIVE_PATH_TO_START_MESSAGE_ID;
+const CRON_EXPRESSION: string | undefined = process.env.CRON_EXPRESSION;
 
 if (!TOKEN) {
   throw new Error("you need to provide a TOKEN in an .env file!");
@@ -42,20 +56,42 @@ if (!TOKEN) {
 if (!CHAT_ID) {
   throw new Error("you need to provide a CHAT_ID in an .env file!");
 }
+if (!RELATIVE_PATH_TO_PLAYERS_STATS) {
+  throw new Error(
+    "you need to provide a RELATIVE_PATH_TO_PLAYERS_STATS in an .env file!",
+  );
+}
+if (!RELATIVE_PATH_TO_START_MESSAGE_ID) {
+  throw new Error(
+    "you need to provide a RELATIVE_PATH_TO_START_MESSAGE_ID in an .env file!",
+  );
+}
+if (!CRON_EXPRESSION) {
+  throw new Error("you need to provide a CRON_EXPRESSION in an .env file!");
+}
 
 // We need absolute path because node:fs throws an error when opening file with relative path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const pathToPlayersStats = join(__dirname, "../data/playersStats.csv");
-const pathToStartMessageId = join(__dirname, "../data/startMessageId.txt");
-
-const CRON_EXPRESSION: string = "0 0 * * *";
+const pathToPlayersStats = join(__dirname, RELATIVE_PATH_TO_PLAYERS_STATS);
+const pathToStartMessageId = join(__dirname, RELATIVE_PATH_TO_START_MESSAGE_ID);
 
 const WORDLE_REGEX = /^Wordle \d+[.,]\d+ [1-6X]\/6/;
 
-export const bot: TelegramBot = new TelegramBot(TOKEN!, { polling: true });
-
 let playersStatsOfTheDay: PlayerStatsOfTheDay[] = [];
+
+export const bot: TelegramBot = new TelegramBot(TOKEN, { polling: true });
+
+console.log(`Bot is up and running in ${environment} mode`);
+console.log(`Bot TOKEN is ${TOKEN}`);
+console.log(`CHAT_ID is ${CHAT_ID}`);
+console.log(
+  `RELATIVE_PATH_TO_PLAYERS_STATS is ${RELATIVE_PATH_TO_PLAYERS_STATS}`,
+);
+console.log(
+  `RELATIVE_PATH_TO_START_MESSAGE_ID is ${RELATIVE_PATH_TO_START_MESSAGE_ID}`,
+);
+console.log(`CRON_EXPRESSION is ${CRON_EXPRESSION}`);
 
 bot.onText(/\/start/, async () => {
   const startMessage: TelegramBot.Message | void = await sendMessage(

@@ -5,7 +5,8 @@
   "main": "src/bot.ts",
   "type": "module",
   "scripts": {
-    "bot": "npx tsc && node src/bot.js"
+    "bot": "ENVIRONMENT=prod npx tsc && node src/bot.js",
+    "dev": "ENVIRONMENT=dev npx tsc && node src/bot.js"
   },
   "repository": {
     "type": "git",
