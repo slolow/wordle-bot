@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "bot": "ENVIRONMENT=prod npx tsc && node src/bot.js",
-    "dev": "ENVIRONMENT=dev npx tsc && node src/bot.js"
+    "dev": "ENVIRONMENT=dev npx tsc && node src/bot.js",
+    "version-readme": "npx tsc && node addBotVersionToReadme.js",
+    "unversion-readme": "npx tsc && node replaceBotVersionWithPlaceHolderInREADME.js"
   },
   "repository": {
     "type": "git",

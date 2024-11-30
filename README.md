@@ -2,6 +2,8 @@
 
 A telegram bot for a wordle championship 🏆
 
+Latest version: 1.0.1
+
 ## start
 
 Run me with `npm run bot`
