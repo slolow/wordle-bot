@@ -14,6 +14,13 @@ export const sendMessage = async (
     .catch((error) => console.error("bot message could not be send", error));
 };
 
+export const deleteMessage = (messageId: number) =>
+  bot
+    .deleteMessage(CHAT_ID!, messageId)
+    .catch((error) =>
+      console.error(`message with id ${messageId} could not be deleted`, error),
+    );
+
 export const sendPhoto = async (
   photo: string | internal.Stream | Buffer,
   caption: string,

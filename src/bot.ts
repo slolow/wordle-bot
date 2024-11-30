@@ -22,6 +22,7 @@ import { createNoOnePlayedYesterdayMessage } from "./messages/createNoOnePlayedY
 import { createCrashMessage } from "./messages/createCrashMessage.js";
 import { createNotAbleToUpdatePlayersStatsMessage } from "./messages/createNotAbleToUpdatePlayersStatsMessage.js";
 import {
+  deleteMessage,
   sendDocument,
   sendMessage,
   sendPhoto,
@@ -133,25 +134,30 @@ bot.on("message", async (msg: TelegramBot.Message) => {
     return;
   }
 
+  // early exit when player already submitted result
+  if (
+    playersStatsOfTheDay.find(
+      (playerStatsOfTheDay: PlayerStatsOfTheDay) =>
+        playerStatsOfTheDay.id === sender.id,
+    )
+  ) {
+    await deleteMessage(msg.message_id);
+    return;
+  }
+
   if (WORDLE_REGEX.test(messageText)) {
     const informationFromWordleMessage = messageText.split(" ");
     const numberOfAttempts = informationFromWordleMessage[2][0];
 
     const playerStatsOfTheDay: PlayerStatsOfTheDay = {
+      id: sender.id,
       name: sender.first_name,
       attempts:
         numberOfAttempts !== "X" ? Number(numberOfAttempts) : numberOfAttempts,
     };
     playersStatsOfTheDay.push(playerStatsOfTheDay);
   } else {
-    bot
-      .deleteMessage(chatId, msg.message_id)
-      .catch((error) =>
-        console.error(
-          `message with id ${msg.message_id} could not be deleted`,
-          error,
-        ),
-      );
+    await deleteMessage(msg.message_id);
   }
 });
 
