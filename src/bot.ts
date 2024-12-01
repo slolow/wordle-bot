@@ -92,7 +92,16 @@ const pathToStartMessageId = join(__dirname, RELATIVE_PATH_TO_START_MESSAGE_ID);
 
 const WORDLE_REGEX = /^Wordle \d+[.,]\d+ [1-6X]\/6/;
 
-let playersStatsOfTheDay: PlayerStatsOfTheDay[] = [];
+let playersStatsOfTheDay: PlayerStatsOfTheDay[] = (await importFromCsv(
+  pathToPlayersStatsOfTheDay,
+).catch(async (error) => {
+  await sendMessage(createCrashMessage());
+  console.error(
+    `An error occurred while importing the data from ${pathToPlayersStatsOfTheDay}`,
+    error,
+  );
+  return [];
+})) as PlayerStatsOfTheDay[];
 
 export const bot: TelegramBot = new TelegramBot(TOKEN, { polling: true });
 
