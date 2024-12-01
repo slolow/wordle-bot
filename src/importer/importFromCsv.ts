@@ -1,8 +1,13 @@
-import { PlayerStats } from "../data-structure/dataTypes.js";
+import {
+  PlayerStats,
+  PlayerStatsOfTheDay,
+} from "../data-structure/dataTypes.js";
 import { readFile } from "node:fs";
 import Papa, { type ParseResult } from "papaparse";
 
-export const importFromCsv = (filePath: string): Promise<PlayerStats[]> => {
+export const importFromCsv = (
+  filePath: string,
+): Promise<PlayerStats[] | PlayerStatsOfTheDay[]> => {
   return new Promise((resolve, reject) => {
     readFile(
       filePath,
@@ -12,7 +17,11 @@ export const importFromCsv = (filePath: string): Promise<PlayerStats[]> => {
           return reject(error);
         }
 
-        Papa.parse<PlayerStats>(data, {
+        if (data.length === 0) {
+          return resolve([]);
+        }
+
+        Papa.parse<PlayerStats | PlayerStatsOfTheDay>(data, {
           header: true,
           dynamicTyping: true,
           skipEmptyLines: true,

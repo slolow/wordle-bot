@@ -47,6 +47,8 @@ const TOKEN: string | undefined = process.env.TOKEN;
 export const CHAT_ID: string | undefined = process.env.CHAT_ID;
 const RELATIVE_PATH_TO_PLAYERS_STATS: string | undefined =
   process.env.RELATIVE_PATH_TO_PLAYERS_STATS;
+const RELATIVE_PATH_TO_PLAYERS_STATS_OF_THE_DAY: string | undefined =
+  process.env.RELATIVE_PATH_TO_PLAYERS_STATS_OF_THE_DAY;
 const RELATIVE_PATH_TO_START_MESSAGE_ID: string | undefined =
   process.env.RELATIVE_PATH_TO_START_MESSAGE_ID;
 const CRON_EXPRESSION: string | undefined = process.env.CRON_EXPRESSION;
@@ -62,6 +64,11 @@ if (!RELATIVE_PATH_TO_PLAYERS_STATS) {
     "you need to provide a RELATIVE_PATH_TO_PLAYERS_STATS in an .env file!",
   );
 }
+if (!RELATIVE_PATH_TO_PLAYERS_STATS_OF_THE_DAY) {
+  throw new Error(
+    "you need to provide a RELATIVE_PATH_TO_PLAYERS_STATS_OF_THE_DAY in an .env file!",
+  );
+}
 if (!RELATIVE_PATH_TO_START_MESSAGE_ID) {
   throw new Error(
     "you need to provide a RELATIVE_PATH_TO_START_MESSAGE_ID in an .env file!",
@@ -75,6 +82,10 @@ if (!CRON_EXPRESSION) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const pathToPlayersStats = join(__dirname, RELATIVE_PATH_TO_PLAYERS_STATS);
+const pathToPlayersStatsOfTheDay = join(
+  __dirname,
+  RELATIVE_PATH_TO_PLAYERS_STATS_OF_THE_DAY,
+);
 const pathToStartMessageId = join(__dirname, RELATIVE_PATH_TO_START_MESSAGE_ID);
 
 const WORDLE_REGEX = /^Wordle \d+[.,]\d+ [1-6X]\/6/;
@@ -88,6 +99,9 @@ console.log(`Bot TOKEN is ${TOKEN}`);
 console.log(`CHAT_ID is ${CHAT_ID}`);
 console.log(
   `RELATIVE_PATH_TO_PLAYERS_STATS is ${RELATIVE_PATH_TO_PLAYERS_STATS}`,
+);
+console.log(
+  `RELATIVE_PATH_TO_PLAYERS_STATS_OF_THE_DAY is ${RELATIVE_PATH_TO_PLAYERS_STATS_OF_THE_DAY}`,
 );
 console.log(
   `RELATIVE_PATH_TO_START_MESSAGE_ID is ${RELATIVE_PATH_TO_START_MESSAGE_ID}`,
@@ -156,18 +170,38 @@ bot.on("message", async (msg: TelegramBot.Message) => {
         numberOfAttempts !== "X" ? Number(numberOfAttempts) : numberOfAttempts,
     };
     playersStatsOfTheDay.push(playerStatsOfTheDay);
+    exportToCsv(pathToPlayersStatsOfTheDay, playersStatsOfTheDay).catch(
+      (error) => {
+        console.error(
+          `The updated playersStatsOfTheDay could not be exported to ${pathToPlayersStatsOfTheDay}`,
+          error,
+        );
+      },
+    );
   } else {
     await deleteMessage(msg.message_id);
   }
 });
 
 cron.schedule(CRON_EXPRESSION, async () => {
-  if (playersStatsOfTheDay.length === 0) {
+  const savedPlayersStatsOfTheDay: PlayerStatsOfTheDay[] | null =
+    (await importFromCsv(pathToPlayersStatsOfTheDay).catch((error) => {
+      sendMessage(createCrashMessage());
+      console.error(
+        `An error occurred while importing the data from ${pathToPlayersStatsOfTheDay}`,
+        error,
+      );
+      return null;
+    })) as PlayerStatsOfTheDay[];
+
+  if (savedPlayersStatsOfTheDay === null) return;
+
+  if (savedPlayersStatsOfTheDay.length === 0) {
     await sendMessage(createNoOnePlayedYesterdayMessage());
     return;
   }
 
-  const playersStats: PlayerStats[] = await importFromCsv(
+  const savedPlayersStats: PlayerStats[] | null = (await importFromCsv(
     pathToPlayersStats,
   ).catch((error) => {
     sendMessage(createCrashMessage());
@@ -175,16 +209,19 @@ cron.schedule(CRON_EXPRESSION, async () => {
       `An error occurred while importing the data from ${pathToPlayersStats}`,
       error,
     );
-    process.exit(1);
-  });
+    return null;
+  })) as PlayerStats[];
 
-  const winnersStatsOfTheDay: PlayerStatsOfTheDay[] =
-    getWinnersStatsOfTheDay(playersStatsOfTheDay);
+  if (savedPlayersStats === null) return;
+
+  const winnersStatsOfTheDay: PlayerStatsOfTheDay[] = getWinnersStatsOfTheDay(
+    savedPlayersStatsOfTheDay,
+  );
 
   const updatedPlayersStats: PlayerStats[] = updatePlayersStats(
     winnersStatsOfTheDay,
-    playersStatsOfTheDay,
-    playersStats,
+    savedPlayersStatsOfTheDay,
+    savedPlayersStats,
   );
 
   let hasExportError: boolean = false;
@@ -212,4 +249,5 @@ cron.schedule(CRON_EXPRESSION, async () => {
   await sendDocument(pathToPlayersStats, createSeeMoreStatsMessage());
 
   playersStatsOfTheDay = [];
+  await exportToCsv(pathToPlayersStatsOfTheDay, playersStatsOfTheDay);
 });

@@ -1,13 +1,17 @@
-import { PlayerStats } from "../data-structure/dataTypes.js";
+import {
+  PlayerStats,
+  PlayerStatsOfTheDay,
+} from "../data-structure/dataTypes.js";
 import Papa from "papaparse";
 import { writeFile } from "node:fs";
 
 export const exportToCsv = (
   filePath: string,
-  data: PlayerStats[],
+  data: PlayerStats[] | PlayerStatsOfTheDay[],
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     // Convert data to CSV format
+    // @ts-ignore
     const csv: string = Papa.unparse(data);
 
     writeFile(
