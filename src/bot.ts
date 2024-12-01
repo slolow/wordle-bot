@@ -36,6 +36,7 @@ import { importFromTxt } from "./importer/importFromTxt.js";
 import { createBotWillBeDownMessage } from "./messages/createBotWillBeDownMessage.js";
 import { createBotIsBackMessage } from "./messages/createBotIsBackMessage.js";
 import { Environment } from "./Environment.js";
+import { createPauseTheGameMessage } from "./messages/createPauseTheGameMessage.js";
 
 // config dotenv to read the right .env file. By default, read from .env.development.local.
 const environment: Environment =
@@ -119,6 +120,8 @@ bot.onText(/\/start/, async () => {
 });
 
 bot.onText(/\/down/, () => sendMessage(createBotWillBeDownMessage(), 0));
+
+bot.onText(/\/pause/, () => sendMessage(createPauseTheGameMessage(), 0));
 
 bot.onText(/\/back/, () => sendMessage(createBotIsBackMessage(), 0));
 
