@@ -7,9 +7,7 @@ export const createWinnersOfTheDayMessage = (
     (playerStatsOfTheDay: PlayerStatsOfTheDay) => playerStatsOfTheDay.name,
   );
 
-  if (winners.length === 0) {
-    return "👎 No one won yesterday. Bunch of looser.";
-  }
+  if (winners.length === 0) return "👎 No one won yesterday. Bunch of looser.";
 
   const attempts: number = <number>winnersStatsOfTheDay[0].attempts;
 

@@ -10,7 +10,6 @@ import cron from "node-cron";
 import dotenv from "dotenv";
 import path from "node:path";
 import { getWinnersStatsOfTheDay } from "./playersStatsOfTheDay/getWinnersStatsOfTheDay.js";
-import { createWinnersOfTheDayMessage } from "./messages/createWinnersOfTheDayMessage.js";
 import { importFromCsv } from "./importer/importFromCsv.js";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -28,7 +27,6 @@ import {
   sendPhoto,
 } from "./messages/sendMessage.js";
 import { createSeeMoreStatsMessage } from "./messages/createSeeMoreStatsMessage.js";
-import { createAllTimeLeaderMessage } from "./messages/createAllTimeLeaderMessage.js";
 import { createStartMessage } from "./messages/createStartMessage.js";
 import { createWelcomeNewChatMembersMessage } from "./messages/createWelcomeNewChatMembersMessage.js";
 import { exportToTxt } from "./exporter/exportToTxt.js";
@@ -37,6 +35,8 @@ import { createBotWillBeDownMessage } from "./messages/createBotWillBeDownMessag
 import { createBotIsBackMessage } from "./messages/createBotIsBackMessage.js";
 import { Environment } from "./Environment.js";
 import { createPauseTheGameMessage } from "./messages/createPauseTheGameMessage.js";
+import { findWordleGods } from "./playersStats/findWordleGod.js";
+import { createResultsOfTheDayMessage } from "./messages/createResultsOfTheDayMessage.js";
 
 // config dotenv to read the right .env file. By default, read from .env.development.local.
 const environment: Environment =
@@ -236,11 +236,11 @@ cron.schedule(CRON_EXPRESSION, async () => {
     );
   });
 
-  const winnersOfTheDayMessage: string =
-    createWinnersOfTheDayMessage(winnersStatsOfTheDay);
-  const allTimeLeaderMessage: string =
-    createAllTimeLeaderMessage(updatedPlayersStats);
-  const messageOfTheDay: string = `${winnersOfTheDayMessage}\n\n${allTimeLeaderMessage}`;
+  const wordleGodsStats: PlayerStats[] = findWordleGods(updatedPlayersStats);
+  const messageOfTheDay: string = createResultsOfTheDayMessage(
+    winnersStatsOfTheDay,
+    wordleGodsStats,
+  );
 
   if (hasExportError) {
     await sendMessage(
