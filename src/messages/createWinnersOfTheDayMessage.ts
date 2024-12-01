@@ -14,7 +14,6 @@ export const createWinnersOfTheDayMessage = (
   const attempts: number = <number>winnersStatsOfTheDay[0].attempts;
 
   return winners.length > 1
-    ? `🏆 Yesterday's winners are 🥁... ${winners.slice(0, -1).join(", ")} and ${winners[winners.length - 1]} with 
-    ${attempts} attempts. Congrats my friends!`
-    : `🏆 Yesterday's winners is 🥁...${winners[0]} with ${attempts} attempts. Congrats my friend!`;
+    ? `🏆 Yesterday's winners are 🥁... ${winners.slice(0, -1).join(", ")} and ${winners[winners.length - 1]} with ${attempts} attempts. Congrats my friends!`
+    : `🏆 Yesterday's winners is 🥁... ${winners[0]} with ${attempts} attempts. Congrats my friend!`;
 };
