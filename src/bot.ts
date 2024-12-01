@@ -37,6 +37,7 @@ import { Environment } from "./Environment.js";
 import { createPauseTheGameMessage } from "./messages/createPauseTheGameMessage.js";
 import { findWordleGods } from "./playersStats/findWordleGod.js";
 import { createResultsOfTheDayMessage } from "./messages/createResultsOfTheDayMessage.js";
+import { createAnnouncementMessage } from "./messages/createAnnouncementMessage.js";
 
 // config dotenv to read the right .env file. By default, read from .env.development.local.
 const environment: Environment =
@@ -118,6 +119,8 @@ bot.onText(/\/start/, async () => {
 
   await exportToTxt(pathToStartMessageId, startMessageId.toString());
 });
+
+bot.onText(/\/announce/, () => sendMessage(createAnnouncementMessage(), 0));
 
 bot.onText(/\/down/, () => sendMessage(createBotWillBeDownMessage(), 0));
 

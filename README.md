@@ -2,7 +2,7 @@
 
 A telegram bot for a wordle championship 🏆
 
-Latest version: 1.0.1
+Latest version: 1.1.0
 
 ## start
 
